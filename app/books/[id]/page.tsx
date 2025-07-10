@@ -1,9 +1,16 @@
-// Book Details Page
 import { getBookById } from '@/lib/data';
 import { FiBookOpen, FiArrowLeft, FiEdit3 } from 'react-icons/fi';
 import Link from 'next/link';
+import Image from 'next/image';
 
-export default async function BookDetailPage({ params }: { params: { id: string } }) {
+// ✅ No need to import PageProps — use this type directly:
+type Props = {
+  params: {
+    id: string;
+  };
+};
+
+export default async function BookDetailPage({ params }: Props) {
   const bookId = params.id;
   const book = await getBookById(bookId);
 
@@ -30,11 +37,13 @@ export default async function BookDetailPage({ params }: { params: { id: string 
         </Link>
 
         <div className="flex flex-col md:flex-row gap-6">
-          <div className="w-full md:w-1/3 h-72 flex items-center justify-center bg-gray-100 rounded">
+          <div className="w-full md:w-1/3 h-72 flex items-center justify-center bg-gray-100 rounded overflow-hidden">
             {book.imageUrl ? (
-              <img
+              <Image
                 src={book.imageUrl}
                 alt={book.title}
+                width={300}
+                height={400}
                 className="object-contain h-full w-full"
               />
             ) : (
@@ -53,9 +62,9 @@ export default async function BookDetailPage({ params }: { params: { id: string 
             <div className="pt-4">
               <h3 className="text-sm font-medium text-gray-700 mb-1">Description</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
-                {/* Replace this with dynamic data if needed */}
-                This book provides valuable insights and practical examples. Perfect for learners
-                at all levels.
+                {book.description
+                  ? book.description
+                  : 'No description provided for this book.'}
               </p>
             </div>
 

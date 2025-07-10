@@ -1,5 +1,6 @@
 import { fetchBooks } from '@/lib/data';
 import Link from 'next/link';
+import Image from 'next/image'; // ✅ import next/image
 import { FiBookOpen, FiPlus, FiSearch, FiFilter, FiEdit } from 'react-icons/fi';
 
 export default async function BooksPage() {
@@ -95,9 +96,11 @@ export default async function BooksPage() {
                       <div className="p-5">
                         <div className="flex items-center justify-center h-40 bg-gray-100 rounded mb-4">
                           {book.imageUrl ? (
-                            <img 
-                              src={book.imageUrl} 
+                            <Image 
+                              src={book.imageUrl}
                               alt={book.title}
+                              width={200}
+                              height={300}
                               className="h-full w-full object-cover"
                             />
                           ) : (
