@@ -1,7 +1,27 @@
 import { fetchBooks } from '@/lib/data';
 import Link from 'next/link';
-import Image from 'next/image'; // ✅ import next/image
+import Image from 'next/image';
 import { FiBookOpen, FiPlus, FiSearch, FiFilter, FiEdit } from 'react-icons/fi';
+
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  genre: string;
+  price?: number;
+  description?: string;
+  imageUrl?: string | null;
+}
+
+const isValidImageUrl = (url?: string | null): boolean => {
+  if (!url) return false;
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 export default async function BooksPage() {
   const books = await fetchBooks();
@@ -19,6 +39,7 @@ export default async function BooksPage() {
             <Link 
               href="/books/add" 
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              prefetch={false}
             >
               <FiPlus className="h-4 w-4" />
               <span className="ml-2">Add Book</span>
@@ -67,6 +88,7 @@ export default async function BooksPage() {
                 <Link
                   href="/books/add"
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  prefetch={false}
                 >
                   <FiPlus className="h-4 w-4 mr-2" />
                   Add Book
@@ -92,19 +114,23 @@ export default async function BooksPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {books.map((book) => (
                   <div key={book.id} className="group relative bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition duration-150">
-                    <Link href={`/books/${book.id}`} className="block">
+                    <Link href={`/books/${book.id}`} className="block" prefetch={false}>
                       <div className="p-5">
                         <div className="flex items-center justify-center h-40 bg-gray-100 rounded mb-4">
-                          {book.imageUrl ? (
+                          {isValidImageUrl(book.imageUrl) ? (
                             <Image 
-                              src={book.imageUrl}
-                              alt={book.title}
+                              src={book.imageUrl!}
+                              alt={`${book.title} cover`}
                               width={200}
                               height={300}
-                              className="h-full w-full object-cover"
+                              className="h-full w-full object-contain"
+                              priority={false}
+                              unoptimized={process.env.NODE_ENV !== 'production'}
                             />
                           ) : (
-                            <FiBookOpen className="h-12 w-12 text-gray-400" />
+                            <div className="flex items-center justify-center h-full">
+                              <FiBookOpen className="h-12 w-12 text-gray-400" />
+                            </div>
                           )}
                         </div>
                         <h3 className="text-lg font-medium text-gray-900 group-hover:text-indigo-600 line-clamp-1">
@@ -127,6 +153,7 @@ export default async function BooksPage() {
                       href={`/books/edit/${book.id}`}
                       className="absolute bottom-2 right-2 z-10 px-3 py-1.5 bg-indigo-600 text-white text-xs rounded hover:bg-indigo-700 transition"
                       title="Edit this book"
+                      prefetch={false}
                     >
                       <FiEdit className="inline mr-1" />
                       Edit

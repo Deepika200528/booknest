@@ -1,7 +1,10 @@
+// lib/data.ts
+
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+// ✅ Fetch books with search and sort functionality
 export async function fetchBooks(search: string = '', sort: string = 'recent') {
   return await prisma.book.findMany({
     where: {
@@ -20,16 +23,14 @@ export async function fetchBooks(search: string = '', sort: string = 'recent') {
   });
 }
 
-
+// ✅ Get a single book by ID
 export async function getBookById(id: string) {
   return await prisma.book.findUnique({
-    where: { id }, // ✅ keep as string
+    where: { id }, // id is a string (uuid)
   });
 }
 
-
-
-// Update book by ID (convert to number)
+// ✅ Update book by ID
 export async function updateBook(updatedBook: {
   id: string;
   title: string;
@@ -39,7 +40,7 @@ export async function updateBook(updatedBook: {
   imageUrl?: string;
 }) {
   return await prisma.book.update({
-    where: { id: updatedBook.id }, // ✅ keep as string
+    where: { id: updatedBook.id }, // id is string
     data: {
       title: updatedBook.title,
       author: updatedBook.author,
@@ -49,4 +50,3 @@ export async function updateBook(updatedBook: {
     },
   });
 }
-

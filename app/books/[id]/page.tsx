@@ -3,16 +3,25 @@ import { FiBookOpen, FiArrowLeft, FiEdit3 } from 'react-icons/fi';
 import Link from 'next/link';
 import Image from 'next/image';
 
-// ✅ No need to import PageProps — use this type directly:
-type Props = {
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  genre: string;
+  price?: number;
+  description?: string;
+  imageUrl?: string | null;
+}
+
+interface Props {
   params: {
     id: string;
   };
-};
+}
 
 export default async function BookDetailPage({ params }: Props) {
   const bookId = params.id;
-  const book = await getBookById(bookId);
+  const book: Book | null = await getBookById(bookId);
 
   if (!book) {
     return (
@@ -31,6 +40,7 @@ export default async function BookDetailPage({ params }: Props) {
         <Link
           href="/books"
           className="inline-flex items-center text-sm text-indigo-600 hover:underline mb-4"
+          prefetch={false}
         >
           <FiArrowLeft className="mr-1" />
           Back to Books
@@ -41,10 +51,12 @@ export default async function BookDetailPage({ params }: Props) {
             {book.imageUrl ? (
               <Image
                 src={book.imageUrl}
-                alt={book.title}
+                alt={`Cover of ${book.title}`}
                 width={300}
                 height={400}
                 className="object-contain h-full w-full"
+                priority
+                unoptimized={!book.imageUrl.includes('your-trusted-domain.com')} // Only optimize your own images
               />
             ) : (
               <FiBookOpen className="h-12 w-12 text-gray-400" />
@@ -57,20 +69,21 @@ export default async function BookDetailPage({ params }: Props) {
             <span className="inline-block bg-indigo-100 text-indigo-800 text-xs px-2.5 py-0.5 rounded">
               {book.genre}
             </span>
-            <p className="text-lg font-semibold text-gray-800">${book.price?.toFixed(2)}</p>
+            <p className="text-lg font-semibold text-gray-800">
+              ${book.price?.toFixed(2) ?? '0.00'}
+            </p>
 
             <div className="pt-4">
               <h3 className="text-sm font-medium text-gray-700 mb-1">Description</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
-                {book.description
-                  ? book.description
-                  : 'No description provided for this book.'}
+                {book.description || 'No description provided for this book.'}
               </p>
             </div>
 
             <Link
               href={`/books/edit/${book.id}`}
               className="inline-flex items-center mt-4 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md shadow hover:bg-indigo-700"
+              prefetch={false}
             >
               <FiEdit3 className="mr-2 h-4 w-4" />
               Edit Book
