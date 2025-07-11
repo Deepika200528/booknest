@@ -8,7 +8,14 @@
     ],
     "build": {
       "env": {
-        "PRISMA_GENERATE_DATAPROXY": "false"
+        "PRISMA_GENERATE_DATAPROXY": "false",
+        "DATABASE_URL": "postgresql://neondb_owner:npg_kF1aueZ7HBOg@ep-nameless-voice-a4vlsnr8-pooler.us-east-1.aws.neon.tech:5432/neondb?sslmode=require&channel_binding=require"  
       }
-    }
+    },
+    "routes": [
+      {
+        "src": "/api/(.*)",
+        "dest": "/api/$1"
+      }
+    ]
   }
